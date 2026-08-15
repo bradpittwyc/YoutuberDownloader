@@ -1,0 +1,24 @@
+# ===== 大文件/构建产物：不提交到 Git =====
+# 运行时工具（ffmpeg ~200MB / deno ~90MB），由 build_macos.sh 在构建机上下载
+tools/
+
+# PyInstaller 构建产物
+build/
+dist/
+
+# Inno Setup 安装包
+installer/
+
+# 下载的视频
+downloads/
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 图标生成中间/验证文件
+icon_check.png
+
+# 运行时错误日志
+yt_downloader_error.log
+gui_error.log

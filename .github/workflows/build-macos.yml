@@ -1,0 +1,31 @@
+# ============================================================
+# macOS Intel (x86_64) 自动构建工作流
+# 用法：
+#   1. 把本项目推到你的 GitHub 仓库
+#   2. 仓库页面 → Actions → "Build macOS Intel" → Run workflow
+#   3. 构建完成后在 Actions 页面下载 .dmg 产物
+# 说明：GitHub 已停用 Intel 构建机(macos-13)，这里在 arm64 构建机
+#       (macos-14) 上用 Rosetta 模拟 x86_64 构建 Intel 版。
+# ============================================================
+name: Build macOS Intel
+
+on:
+  workflow_dispatch:          # 手动触发
+  push:
+    tags: ["v*"]              # 推送 v 开头的标签时自动触发
+
+jobs:
+  build-macos-intel:
+    runs-on: macos-14         # arm64 构建机（自带 Rosetta 2，可模拟 x86_64）
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Intel (x86_64) app + dmg
+        run: bash build_macos.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: YouTubeDownloader-macOS-Intel
+          path: dist/YouTubeDownloader-macOS-Intel.dmg
+          if-no-files-found: error
