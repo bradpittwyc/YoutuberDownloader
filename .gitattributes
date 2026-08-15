@@ -1,0 +1,12 @@
+# 统一换行符规则：
+# - shell 脚本必须在 macOS/Linux 上运行，强制 LF（CRLF 会报错）
+# - .bat 用 CRLF（Windows cmd 最兼容）
+*.sh     text eol=lf
+*.py     text eol=lf
+*.json   text eol=lf
+*.yml    text eol=lf
+*.md     text eol=lf
+*.iss    text eol=lf
+*.txt    text eol=lf
+*.bat    text eol=crlf
+*.vbs    text eol=crlf
