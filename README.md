@@ -97,6 +97,22 @@ macOS 程序必须在 macOS 上构建。本项目的 macOS 构建已做成**一�
 > 因此 Intel 版使用 Rosetta 方案在 arm64 构建机上交叉构建；
 > 如果不需要兼容老款 Intel Mac，也可以把 `runs-on` 改成 `macos-14` 直接构建 Apple Silicon 版。
 
+**首次打开被 Gatekeeper 拦截（"Apple 无法验证此 App 不含恶意软件"）怎么办？**
+
+这是无 Apple 开发者签名的正常现象。任选其一：
+
+```bash
+# 方法一：解除隔离标记（最推荐）
+xattr -d com.apple.quarantine /Applications/YouTubeDownloader.app
+open /Applications/YouTubeDownloader.app
+
+# 方法二：如果提示"已损坏/无法打开"，先重新签名再打开
+codesign --force --deep --sign - /Applications/YouTubeDownloader.app
+```
+
+或：系统设置 → 隐私与安全性 → 底部「仍要打开」。构建流水线已内置 ad-hoc 签名，
+可减少此类拦截；要彻底消除需 Apple 开发者账号 + 公证（Notarization）。
+
 ## 常见问题
 
 - **下载报错 / 网络错误**：YouTube 在某些地区无法直接访问，需要科学上网后重试。

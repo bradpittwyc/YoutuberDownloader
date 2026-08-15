@@ -58,8 +58,13 @@ arch -x86_64 "$PYTHON" -m PyInstaller --noconfirm --clean --windowed --onedir \
   --hidden-import yt_dlp \
   yt_downloader_gui.py
 
-# ---------- 6) 打包成 .dmg ----------
-echo "=== [6/6] 生成 DMG ==="
+# ---------- 6) ad-hoc 签名（没有 Apple 开发者证书时的最佳实践：
+#             可减少 Gatekeeper 的"无法验证开发者"硬拦截） ----------
+echo "=== [6/7] ad-hoc 签名 ==="
+codesign --force --deep --sign - "dist/$APP_NAME.app"
+
+# ---------- 7) 打包成 .dmg ----------
+echo "=== [7/7] 生成 DMG ==="
 mkdir -p dist/dmg
 cp -R "dist/$APP_NAME.app" dist/dmg/
 hdiutil create -volname "$APP_NAME" -srcfolder dist/dmg -ov -format UDZO "dist/${APP_NAME}-macOS-Intel.dmg"
