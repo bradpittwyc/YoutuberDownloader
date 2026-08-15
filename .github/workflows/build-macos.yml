@@ -14,6 +14,9 @@ on:
   push:
     tags: ["v*"]              # 推送 v 开头的标签时自动触发
 
+permissions:
+  contents: write             # 允许把 dmg 挂到 Release
+
 jobs:
   build-macos-intel:
     runs-on: macos-14         # arm64 构建机（自带 Rosetta 2，可模拟 x86_64）
@@ -29,3 +32,10 @@ jobs:
           name: YouTubeDownloader-macOS-Intel
           path: dist/YouTubeDownloader-macOS-Intel.dmg
           if-no-files-found: error
+
+      # 标签触发时：把 dmg 自动挂到对应 Release（方便 Mac 直接下载）
+      - name: Attach DMG to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${GITHUB_REF_NAME}" "dist/YouTubeDownloader-macOS-Intel.dmg" --clobber
