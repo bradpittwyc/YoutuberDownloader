@@ -11,6 +11,10 @@ set -e
 APP_NAME="YouTubeDownloader"
 PY_VERSION="3.12.10"
 
+# 版本号：从 Git 标签取（如 v1.0.2 -> 1.0.2），手动触发时默认 1.0.0
+APP_VERSION="${GITHUB_REF_NAME#v}"
+APP_VERSION="${APP_VERSION:-1.0.0}"
+
 # ---------- 1) 安装 x86_64 Python（python.org 官方安装包为 universal2，
 #             经 arch -x86_64 运行时走 x86_64 分支） ----------
 echo "=== [1/6] 安装 x86_64 Python ${PY_VERSION} ==="
@@ -64,10 +68,21 @@ echo "=== [6/7] ad-hoc 签名 ==="
 codesign --force --deep --sign - "dist/$APP_NAME.app"
 
 # ---------- 7) 打包成 .dmg ----------
-echo "=== [7/7] 生成 DMG ==="
+echo "=== [7/8] 生成 DMG ==="
 mkdir -p dist/dmg
 cp -R "dist/$APP_NAME.app" dist/dmg/
 hdiutil create -volname "$APP_NAME" -srcfolder dist/dmg -ov -format UDZO "dist/${APP_NAME}-macOS-Intel.dmg"
 
+# ---------- 8) 生成 .pkg 安装包（原生安装器：双击 → 输管理员密码 →
+#              自动安装到 /Applications，Launchpad 自动可见） ----------
+echo "=== [8/8] 生成 PKG ==="
+pkgbuild --component "dist/$APP_NAME.app" \
+  --install-location /Applications \
+  --identifier "com.bradpittwyc.youtubedownloader" \
+  --version "$APP_VERSION" \
+  "dist/${APP_NAME}-macOS-Intel.pkg"
+
 echo ""
-echo "✅ 构建完成！产物：dist/${APP_NAME}-macOS-Intel.dmg"
+echo "✅ 构建完成！产物："
+echo "   dist/${APP_NAME}-macOS-Intel.dmg"
+echo "   dist/${APP_NAME}-macOS-Intel.pkg"
