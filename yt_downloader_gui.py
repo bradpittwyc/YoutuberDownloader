@@ -287,7 +287,8 @@ if __name__ == "__main__":
         print("可选分辨率: " + ", ".join(f"{h}p" for h in heights[:6]) if heights else "未知")
         sys.exit(0)
 
-    app = DownloaderApp()
+    from channel_gui import ChannelApp
+    app = ChannelApp()
     try:
         app.mainloop()
     except Exception:

@@ -22,3 +22,5 @@ icon_check.png
 # 运行时错误日志
 yt_downloader_error.log
 gui_error.log
+.venv/
+.pytest_cache/
