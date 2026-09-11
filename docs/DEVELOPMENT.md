@@ -49,3 +49,8 @@ Podcasts 入口、热门排序、社区帖子、付费/私密内容、定时订�
 - Windows spec 写死 D 盘路径，需要修复。
 - GitHub 连接能读仓库，但创建 Issue 返回 403；本机 CLI 凭据返回 401。
 - 已在本地创建 feature/channel-batch-subtitles 分支。远端 Issue/PR 在权限恢复前不能声称创建成功。
+
+## GitHub 协作进度
+
+设备登录已完成，本机 GitHub CLI 写入恢复。已创建总计划 #1、功能 #2、交付 #3。
+
