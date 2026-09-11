@@ -85,6 +85,25 @@ def make_entries():
     return [Entry(key, key, "https://www.youtube.com/watch?v=" + key) for key in ["abcdefghijk", "lmnopqrstuv"]]
 
 
+def test_empty_subtitle_result_is_failure(tmp_path):
+    entry = make_entries()[0]
+    media = tmp_path / 'video.mp4'
+    media.write_bytes(b'media')
+    History(tmp_path).record(entry.id, media)
+    events = []
+    run_queue([entry], Settings(str(tmp_path)), lambda *e: events.append(e),
+              ydl_factory=lambda opts: FakeYDL(opts, lambda *a: None))
+    assert '字幕失败' in str(events)
+    assert History(tmp_path).has(entry.id)
+
+
+def test_progress_resets_for_each_entry(tmp_path):
+    events = []
+    run_queue(make_entries(), Settings(str(tmp_path)), lambda *e: events.append(e),
+              ydl_factory=lambda opts: FakeYDL(opts, lambda *a: None))
+    assert events.count(('progress', 0)) == 2
+
+
 def test_failure_continues_and_repeat_only_downloads_subtitles(tmp_path):
     calls, events = [], []
     def behavior(opts, url, download):

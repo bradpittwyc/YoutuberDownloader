@@ -137,11 +137,11 @@ class ChannelApp(ctk.CTk):
         item = self.tree.identify_row(event.y) if event.type == tk.EventType.ButtonRelease else self.tree.focus()
         if item not in self.entries:
             return
-        if self.catalog:
-            self.selected.clear()
         if item in self.selected:
             self.selected.remove(item)
         else:
+            if self.catalog:
+                self.selected.clear()
             self.selected.add(item)
         self.refresh_checks()
 
@@ -151,7 +151,7 @@ class ChannelApp(ctk.CTk):
         self.count.configure(text=f"共 {len(self.entries)} 项 · 已选 {len(self.selected)} 项")
 
     def select_all(self, value):
-        if not self.busy and not self.catalog:
+        if not self.busy and (not self.catalog or not value):
             self.selected = set(self.entries) if value else set()
             self.refresh_checks()
 

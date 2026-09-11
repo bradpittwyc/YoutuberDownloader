@@ -163,6 +163,7 @@ def run_queue(entries, settings, emit, cancel=None, ydl_factory=factory):
         if cancel.is_set():
             break
         emit("status", (entry.id, f"处理中 {index}/{len(unique)}"))
+        emit("progress", 0)
         def hook(data):
             if cancel.is_set():
                 raise Cancelled()
@@ -202,7 +203,9 @@ def run_queue(entries, settings, emit, cancel=None, ydl_factory=factory):
                             postprocessors=[{"key": "FFmpegSubtitlesConvertor", "format": "srt"}])
                 with ydl_factory(opts) as ydl:
                     sub_info = ydl.extract_info(entry.url, download=True)
-                    subtitle_status = "；字幕已处理" if (sub_info or {}).get("requested_subtitles") else "；无所选语言字幕"
+                    if not sub_info:
+                        raise RuntimeError("字幕信息读取失败，请重试")
+                    subtitle_status = "；字幕已处理" if sub_info.get("requested_subtitles") else "；无所选语言字幕"
             emit("status", (entry.id, ("视频已存在" if existed else "完成") + subtitle_status))
         except Exception as exc:
             if isinstance(exc, Cancelled) or cancel.is_set():
