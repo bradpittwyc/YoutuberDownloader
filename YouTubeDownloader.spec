@@ -1,15 +1,25 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_all
+from pathlib import Path
 
-datas = [('D:/Projects/DS Harness/yt-downloader/youtube_red.json', '.')]
-binaries = [('D:/Projects/DS Harness/yt-downloader/tools/ffmpeg-9.0.1-essentials_build/bin/ffmpeg.exe', 'tools/ffmpeg/bin'), ('D:/Projects/DS Harness/yt-downloader/tools/ffmpeg-9.0.1-essentials_build/bin/ffprobe.exe', 'tools/ffmpeg/bin'), ('D:/Projects/DS Harness/yt-downloader/tools/deno/deno.exe', 'tools/deno')]
+root = Path(SPECPATH)
+datas = [(str(root / 'youtube_red.json'), '.')]
+binaries = []
+for name, destination in [('ffmpeg.exe', 'tools/ffmpeg/bin'), ('deno.exe', 'tools/deno')]:
+    matches = list((root / 'tools').rglob(name))
+    if not matches:
+        raise SystemExit(f'Missing {name}: place the official executable under tools/ before building')
+    binaries.append((str(matches[0]), destination))
+for probe in (root / 'tools').rglob('ffprobe.exe'):
+    binaries.append((str(probe), 'tools/ffmpeg/bin'))
+    break
 hiddenimports = ['yt_dlp']
 tmp_ret = collect_all('customtkinter')
 datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
-    ['D:/Projects/DS Harness/yt-downloader/yt_downloader_gui.py'],
+    [str(root / 'yt_downloader_gui.py')],
     pathex=[],
     binaries=binaries,
     datas=datas,
@@ -39,7 +49,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['D:/Projects/DS Harness/yt-downloader/icon.ico'],
+    icon=[str(root / 'icon.ico')],
 )
 coll = COLLECT(
     exe,

@@ -1,5 +1,38 @@
 # YouTube 高清视频下载器
 
+## 频道批量下载开发预览版
+
+新版图形界面支持：频道 Videos / Shorts、频道播放列表浏览、单视频和直接播放列表链接。
+先点「扫描列表」，勾选视频，再点「下载选中项 / 重试」。扫描数量 0 表示全部；
+建议第一次填 3 做小范围验证。频道播放列表需先选一个列表并点「打开选中播放列表」。
+
+可选 480p、720p、1080p 或最高画质；中文、英文字幕与自动字幕，保存为 SRT。
+批量任务按顺序下载；某项失败继续下一项。取消在网络请求或合并步骤结束后生效。
+重复开始可续传；已有媒体只补字幕。若先前下载了低画质，希望重新下载高画质，
+请选新目录，或移走该视频及对应目录中的文件后重试。
+
+下载文件按视频 ID 分目录保存，`.youtube-history.json` 记录已成功保存的媒体路径。
+字幕后来失败不会删除视频。标题和逐项结果显示在列表中；「队列结束」不代表每一项都成功。
+界面暂不支持 Podcasts、热门排序、翻译或语音识别。
+
+### 开发与测试
+
+```bat
+python -m venv .venv
+.venv\Scripts\python -m pip install -r requirements-dev.txt
+.venv\Scripts\python -m pytest -q
+.venv\Scripts\python yt_downloader_gui.py
+```
+
+高清合并和 SRT 转换需要 ffmpeg，YouTube 格式解析需要 Deno；放入
+`tools/ffmpeg/bin/ffmpeg.exe` 和 `tools/deno/deno.exe`。
+Windows 打包配置已改成相对路径：安装 PyInstaller 后运行
+`python -m PyInstaller --noconfirm YouTubeDownloader.spec`。
+生成 `dist/YouTubeDownloader` 便携目录；安装向导仍需 Inno Setup 单独编译与验证。
+
+开发过程见 [开发计划](docs/DEVELOPMENT.md)，验收证据见 [测试记录](docs/VALIDATION.md)。
+下面保留原版命令行与历史安装说明；旧版功能描述不代表新版的所有验收已完成。
+
 一个简单易用的 Python 程序：输入 YouTube 视频链接，自动下载**最高清晰度**版本
 （视频流 + 音频流自动合并，优先输出 mp4）。
 
